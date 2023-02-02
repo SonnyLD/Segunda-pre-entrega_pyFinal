@@ -27,6 +27,7 @@ app.use((req, _res, next) => { //https://aaryanadil.com/pass-socket-io-to-expres
 app.use('/api/products',productsRouter);
 app.use('/api/carts',cartsRouter);
 app.use("/", viewsRouter);
+app.use("/pagination", viewsRouter)
 
 const PORT = process.env.PORT || 8080
 const server = app.listen(PORT, () => { 

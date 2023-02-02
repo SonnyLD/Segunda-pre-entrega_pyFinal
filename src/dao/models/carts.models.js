@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import mongooseDelete from "mongoose-delete";
-
+import pagination from "mongoose-paginate-v2";
 
 const schema = new mongoose.Schema(
   {
@@ -45,6 +45,7 @@ const schema = new mongoose.Schema(
 );
 
 schema.plugin(mongooseDelete, { deletedAt: true });
+schema.plugin(pagination);
 
 const CartModel = mongoose.model("Cart", schema);
 export default CartModel;
