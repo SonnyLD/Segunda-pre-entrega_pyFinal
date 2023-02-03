@@ -4,6 +4,7 @@ import mongooseDelete from "mongoose-delete";
 
 const schema = new mongoose.Schema({
 
+
   title: {
     type: String,
     required: true,

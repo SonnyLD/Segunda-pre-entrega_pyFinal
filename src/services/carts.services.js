@@ -5,15 +5,16 @@ class CartServices {
 
     async createCart(cartData) {
         try {
-            const fullData = cartData;
-            if (fullData.products.length > 0) { // Sets total for each product and subtotal for the cart
-                fullData.products.forEach(products => {
-                    products.total = Number(products.price * products.quantity).toFixed(2);
+            const newCart = new CartModel(cartData);
+            if (newCart.Products.length > 0) { // Sets total for each product and subtotal for the cart
+                newCart.Products.forEach(Products => {
+                    Products.total = Number(Products.price * Products.quantity).toFixed(2);
                 });
-                fullData.subtotal = Number(fullData.products.map(product => product.price * product.quantity).reduce((acc, curr) => acc + curr)).toFixed(2);
+                newCart.subtotal = Number(newCart.Products.map(Products => Products.price * Products.quantity).reduce((acc, curr) => acc + curr)).toFixed(2);
             }
-            const newCart = await CartModel.create(cartData);
-            return newCart;
+            
+            const savedCart = await newCart.save();
+            return savedCart;
         } catch (error) {
             throw new Error(error.message);
         }
@@ -82,6 +83,23 @@ async addProductToCart(idCart, idProduct, quantity) {
   }
 } // Can be modified if modifyQuantity method is implemented (for both add and rest methods)
 
+async deleteProductFromCart(idCart, idProduct, quantity) {
+    try { // Check comments in addProductToCart
+        const cart = await CartModel.findById(idCart);
+        const product = await productService.getProduct(idProduct);
+
+        if (cart && product) {
+            let productIndex = cart.Products.findIndex(prod => prod.idProduct === idProduct);
+            if (productIndex != -1) { // Technically index will always be != -1 because it comes from the cart, but just in case
+                cart.Products.splice(productIndex, 1);
+                cart.subtotal = cart.Products.map(prod => prod.total).reduce((acc, curr) => acc + curr);
+            }
+        }
+        return await cart.save();
+    } catch (error) {
+        throw new Error(error.message);
+    }
+}
 async deleteCart(idCart) {
   try {
       await CartModel.findByIdAndDelete(idCart).lean();
